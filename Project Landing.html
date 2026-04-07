@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SwiftClean Lagos — Professional Cleaning Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --green:#00b87a;--green-dark:#008f5e;--green-light:#e6f9f2;
+  --dark:#0d1117;--white:#ffffff;--gray:#f7f8fa;--text:#1a1a2e;--muted:#6b7280;
+  --font:'Plus Jakarta Sans',sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--font);color:var(--text);background:var(--white);}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(0,0,0,0.06);padding:1rem 5%;}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;max-width:1200px;margin:0 auto;}
+.logo{font-size:1.3rem;font-weight:800;color:var(--text);text-decoration:none;}
+.logo span{color:var(--green);}
+.nav-links{display:flex;gap:2rem;list-style:none;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:0.9rem;font-weight:500;transition:color 0.2s;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{background:var(--green);color:white;padding:10px 24px;border-radius:8px;font-weight:600;font-size:0.88rem;text-decoration:none;transition:background 0.2s;}
+.nav-cta:hover{background:var(--green-dark);}
+
+.hero{min-height:100vh;display:flex;align-items:center;background:linear-gradient(160deg,#f0fdf8 0%,#ffffff 60%);padding:8rem 5% 5rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(0,184,122,0.08),transparent 70%);border-radius:50%;}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--green-light);color:var(--green-dark);border-radius:100px;padding:6px 16px;font-size:0.8rem;font-weight:600;margin-bottom:1.5rem;}
+.hero-badge::before{content:'';width:8px;height:8px;background:var(--green);border-radius:50%;}
+h1{font-size:clamp(2.2rem,4vw,3.5rem);font-weight:800;line-height:1.1;letter-spacing:-0.02em;margin-bottom:1.25rem;}
+h1 span{color:var(--green);}
+.hero-desc{font-size:1.05rem;color:var(--muted);line-height:1.75;margin-bottom:2.5rem;font-weight:400;}
+.hero-btns{display:flex;gap:1rem;flex-wrap:wrap;}
+.btn-green{background:var(--green);color:white;padding:14px 32px;border-radius:10px;font-weight:700;font-size:0.95rem;text-decoration:none;transition:background 0.2s,transform 0.2s;}
+.btn-green:hover{background:var(--green-dark);transform:translateY(-2px);}
+.btn-ghost{border:2px solid var(--green);color:var(--green);padding:14px 32px;border-radius:10px;font-weight:600;font-size:0.95rem;text-decoration:none;transition:background 0.2s;}
+.btn-ghost:hover{background:var(--green-light);}
+.hero-trust{display:flex;align-items:center;gap:1rem;margin-top:2rem;}
+.trust-avatars{display:flex;}
+.trust-avatars span{width:36px;height:36px;border-radius:50%;border:2px solid white;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:0.7rem;font-weight:700;color:white;margin-left:-8px;}
+.trust-avatars span:first-child{margin-left:0;}
+.trust-text{font-size:0.85rem;color:var(--muted);}
+.trust-text strong{color:var(--text);}
+
+.hero-card{background:white;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.1);padding:2rem;position:relative;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.card-title{font-weight:700;font-size:1rem;}
+.card-badge{background:var(--green-light);color:var(--green-dark);font-size:0.75rem;font-weight:600;padding:4px 12px;border-radius:100px;}
+.service-list{display:flex;flex-direction:column;gap:0.75rem;}
+.service-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--gray);border-radius:10px;}
+.service-item-icon{width:40px;height:40px;background:var(--green-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.service-item-name{font-weight:600;font-size:0.9rem;}
+.service-item-price{font-size:0.8rem;color:var(--muted);}
+.service-item-arrow{margin-left:auto;color:var(--green);font-size:1.2rem;}
+.card-cta{display:block;text-align:center;background:var(--green);color:white;padding:14px;border-radius:10px;font-weight:700;font-size:0.95rem;text-decoration:none;margin-top:1.25rem;transition:background 0.2s;}
+.card-cta:hover{background:var(--green-dark);}
+
+.stats{background:var(--dark);padding:3rem 5%;}
+.stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;text-align:center;}
+.stat-num{font-size:2.2rem;font-weight:800;color:var(--green);font-family:var(--font);}
+.stat-label{font-size:0.85rem;color:rgba(255,255,255,0.5);margin-top:4px;}
+
+.services{padding:6rem 5%;background:var(--white);}
+.services-inner{max-width:1200px;margin:0 auto;}
+.section-label{font-size:0.78rem;font-weight:700;color:var(--green);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:0.75rem;}
+.section-title{font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:0.75rem;}
+.section-sub{color:var(--muted);font-size:1rem;max-width:500px;line-height:1.7;margin-bottom:3.5rem;}
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;}
+.svc-card{border:1.5px solid rgba(0,0,0,0.07);border-radius:16px;padding:2rem;transition:border-color 0.2s,box-shadow 0.2s;}
+.svc-card:hover{border-color:var(--green);box-shadow:0 8px 30px rgba(0,184,122,0.1);}
+.svc-emoji{font-size:2rem;margin-bottom:1rem;}
+.svc-name{font-weight:700;font-size:1.1rem;margin-bottom:0.5rem;}
+.svc-desc{font-size:0.88rem;color:var(--muted);line-height:1.6;}
+.svc-price{margin-top:1rem;font-weight:700;color:var(--green);font-size:0.95rem;}
+
+.testimonials{padding:6rem 5%;background:var(--gray);}
+.test-inner{max-width:1200px;margin:0 auto;}
+.test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;margin-top:3.5rem;}
+.test-card{background:white;border-radius:16px;padding:1.75rem;border:1px solid rgba(0,0,0,0.05);}
+.stars{color:var(--green);font-size:1.1rem;margin-bottom:1rem;}
+.test-text{font-size:0.92rem;color:var(--text);line-height:1.7;margin-bottom:1.25rem;font-style:italic;}
+.test-author{display:flex;align-items:center;gap:10px;}
+.test-avatar{width:40px;height:40px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-weight:700;color:white;font-size:0.85rem;}
+.test-name{font-weight:600;font-size:0.9rem;}
+.test-loc{font-size:0.78rem;color:var(--muted);}
+
+.cta-section{padding:6rem 5%;background:var(--green);text-align:center;}
+.cta-section h2{font-size:clamp(2rem,4vw,3rem);font-weight:800;color:white;letter-spacing:-0.02em;margin-bottom:1rem;}
+.cta-section p{color:rgba(255,255,255,0.8);font-size:1.05rem;margin-bottom:2.5rem;}
+.btn-white{background:white;color:var(--green);padding:16px 40px;border-radius:10px;font-weight:700;font-size:1rem;text-decoration:none;transition:transform 0.2s;}
+.btn-white:hover{transform:translateY(-2px);}
+
+footer{background:var(--dark);color:rgba(255,255,255,0.5);padding:2rem 5%;text-align:center;font-size:0.85rem;}
+footer a{color:var(--green);text-decoration:none;}
+
+@media(max-width:768px){
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-card{display:none;}
+  .stats-inner{grid-template-columns:repeat(2,1fr);}
+  .nav-links{display:none;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="#">Swift<span>Clean</span></a>
+    <ul class="nav-links">
+      <li><a href="#services">Services</a></li>
+      <li><a href="#testimonials">Reviews</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Book now</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">Lagos #1 Rated Cleaning Service</div>
+      <h1>Your Space,<br><span>Spotlessly</span><br>Clean.</h1>
+      <p class="hero-desc">Professional home and office cleaning services across Lagos. Reliable, affordable, and done right every time. Book in 60 seconds.</p>
+      <div class="hero-btns">
+        <a href="#contact" class="btn-green">Book a cleaning →</a>
+        <a href="#services" class="btn-ghost">See pricing</a>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-avatars">
+          <span>AO</span><span>BK</span><span>CJ</span><span>+</span>
+        </div>
+        <div class="trust-text"><strong>200+ happy clients</strong> across Lagos</div>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="card-header">
+        <span class="card-title">Book a service</span>
+        <span class="card-badge">Available today</span>
+      </div>
+      <div class="service-list">
+        <div class="service-item">
+          <div class="service-item-icon">🏠</div>
+          <div>
+            <div class="service-item-name">Home Cleaning</div>
+            <div class="service-item-price">From ₦15,000</div>
+          </div>
+          <span class="service-item-arrow">›</span>
+        </div>
+        <div class="service-item">
+          <div class="service-item-icon">🏢</div>
+          <div>
+            <div class="service-item-name">Office Cleaning</div>
+            <div class="service-item-price">From ₦25,000</div>
+          </div>
+          <span class="service-item-arrow">›</span>
+        </div>
+        <div class="service-item">
+          <div class="service-item-icon">✨</div>
+          <div>
+            <div class="service-item-name">Deep Clean</div>
+            <div class="service-item-price">From ₦40,000</div>
+          </div>
+          <span class="service-item-arrow">›</span>
+        </div>
+      </div>
+      <a href="#contact" class="card-cta">Book now — same day available</a>
+    </div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="stats-inner">
+    <div><div class="stat-num">200+</div><div class="stat-label">Clients served</div></div>
+    <div><div class="stat-num">4.9★</div><div class="stat-label">Average rating</div></div>
+    <div><div class="stat-num">3yrs</div><div class="stat-label">In business</div></div>
+    <div><div class="stat-num">24h</div><div class="stat-label">Booking turnaround</div></div>
+  </div>
+</div>
+
+<section class="services" id="services">
+  <div class="services-inner">
+    <div class="section-label">What we offer</div>
+    <h2 class="section-title">Our services</h2>
+    <p class="section-sub">Professional cleaning for every space and budget. All services include supplies and equipment.</p>
+    <div class="svc-grid">
+      <div class="svc-card">
+        <div class="svc-emoji">🏠</div>
+        <div class="svc-name">Home Cleaning</div>
+        <div class="svc-desc">Full home clean including bedrooms, kitchen, bathrooms and living areas. Supplies included.</div>
+        <div class="svc-price">From ₦15,000</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-emoji">🏢</div>
+        <div class="svc-name">Office Cleaning</div>
+        <div class="svc-desc">Regular or one time office cleaning. Workstations, common areas, bathrooms, kitchen.</div>
+        <div class="svc-price">From ₦25,000</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-emoji">✨</div>
+        <div class="svc-name">Deep Cleaning</div>
+        <div class="svc-desc">Top to bottom intensive clean. Perfect after moving, parties or long neglected spaces.</div>
+        <div class="svc-price">From ₦40,000</div>
+      </div>
+      <div class="svc-card">
+        <div class="svc-emoji">🚗</div>
+        <div class="svc-name">Car Interior Cleaning</div>
+        <div class="svc-desc">Full interior detailing seats, dashboard, floor mats, windows and air freshening.</div>
+        <div class="svc-price">From ₦8,000</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials" id="testimonials">
+  <div class="test-inner">
+    <div class="section-label">Reviews</div>
+    <h2 class="section-title">What our clients say</h2>
+    <div class="test-grid">
+      <div class="test-card">
+        <div class="stars">★★★★★</div>
+        <p class="test-text">"Absolutely amazing service. My apartment has never been this clean. The team was professional and on time. Will definitely book again!"</p>
+        <div class="test-author">
+          <div class="test-avatar">AO</div>
+          <div><div class="test-name">Adaeze Okonkwo</div><div class="test-loc">Lekki, Lagos</div></div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="stars">★★★★★</div>
+        <p class="test-text">"Used SwiftClean for our office monthly. Very thorough and affordable. Our staff loves coming in to a clean workspace every week."</p>
+        <div class="test-author">
+          <div class="test-avatar">BK</div>
+          <div><div class="test-name">Bola Kuforiji</div><div class="test-loc">Victoria Island, Lagos</div></div>
+        </div>
+      </div>
+      <div class="test-card">
+        <div class="stars">★★★★★</div>
+        <p class="test-text">"Booked a deep clean before my housewarming. They did an incredible job even cleaned places I forgot existed. Highly recommend!"</p>
+        <div class="test-author">
+          <div class="test-avatar">EJ</div>
+          <div><div class="test-name">Emeka Jacobs</div><div class="test-loc">Ikeja, Lagos</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section" id="contact">
+  <h2>Ready for a spotless space?</h2>
+  <p>Book today and get 10% off your first clean. Same day slots available.</p>
+  <a href="https://wa.me/random number" class="btn-white">Book on WhatsApp →</a>
+</section>
+
+<footer>
+  <p>© 2026 SwiftClean Lagos Demo project built by <a href="index.html">Daniel Obanor</a></p>
+</footer>
+
+</body>
+</html>

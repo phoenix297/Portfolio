@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order Automation Dashboard Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#080c14;--surface:#0d1420;--surface2:#111927;--surface3:#16202e;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  --blue:#3b82f6;--blue-light:#60a5fa;--green:#10b981;--orange:#f59e0b;--red:#ef4444;--purple:#8b5cf6;
+  --white:#e8f0fe;--muted:#4a6080;--mono:'JetBrains Mono',monospace;--font:'Manrope',sans-serif;
+}
+html,body{height:100%;font-family:var(--font);}
+body{background:var(--bg);color:var(--white);overflow-x:hidden;}
+
+.app{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+
+/* Sidebar */
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:1.5rem 1rem;display:flex;flex-direction:column;}
+.sidebar-logo{display:flex;align-items:center;gap:8px;padding:0.5rem;margin-bottom:2rem;}
+.logo-icon{width:32px;height:32px;background:var(--blue);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;}
+.logo-text{font-weight:700;font-size:0.95rem;}
+.logo-text span{color:var(--blue-light);}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:0.83rem;font-weight:500;color:var(--muted);cursor:pointer;transition:background 0.2s,color 0.2s;margin-bottom:2px;text-decoration:none;}
+.nav-item:hover{background:var(--surface2);color:var(--white);}
+.nav-item.active{background:rgba(59,130,246,0.12);color:var(--blue-light);border-left:2px solid var(--blue);}
+.nav-section{font-size:0.65rem;font-weight:700;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;padding:0 12px;margin:1.5rem 0 0.5rem;}
+.sidebar-bottom{margin-top:auto;}
+.back-link{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;font-size:0.8rem;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+.back-link:hover{color:var(--white);}
+
+/* Main */
+.main{overflow-y:auto;padding:2rem;}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;}
+.page-title{font-size:1.4rem;font-weight:800;letter-spacing:-0.02em;}
+.page-sub{font-size:0.82rem;color:var(--muted);margin-top:2px;}
+.header-actions{display:flex;gap:8px;}
+.btn-sm{padding:8px 16px;border-radius:8px;font-size:0.8rem;font-weight:600;cursor:pointer;border:none;font-family:var(--font);transition:background 0.2s;}
+.btn-blue{background:var(--blue);color:white;}
+.btn-blue:hover{background:#2563eb;}
+.btn-outline{background:transparent;color:var(--muted);border:1px solid var(--border2);}
+.btn-outline:hover{color:var(--white);border-color:rgba(255,255,255,0.2);}
+
+/* Metric cards */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.metric{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.25rem;}
+.metric-label{font-size:0.72rem;color:var(--muted);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:0.5rem;}
+.metric-val{font-size:1.8rem;font-weight:800;letter-spacing:-0.02em;line-height:1;}
+.metric-val.blue{color:var(--blue-light);}
+.metric-val.green{color:var(--green);}
+.metric-val.orange{color:var(--orange);}
+.metric-val.purple{color:var(--purple);}
+.metric-change{font-size:0.75rem;margin-top:6px;}
+.metric-change.up{color:var(--green);}
+.metric-change.down{color:var(--red);}
+
+/* Workflow visualization */
+.workflow-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-bottom:1.5rem;}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.section-title{font-size:0.9rem;font-weight:700;}
+.running-badge{display:flex;align-items:center;gap:6px;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:100px;padding:4px 12px;font-size:0.72rem;color:var(--green);}
+.running-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.workflow{display:flex;align-items:center;gap:0;overflow-x:auto;padding:0.5rem 0;}
+.wf-node{display:flex;flex-direction:column;align-items:center;min-width:90px;}
+.wf-box{width:64px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;border:2px solid transparent;transition:transform 0.2s;cursor:default;position:relative;}
+.wf-box.active{animation:nodePulse 2s infinite;}
+@keyframes nodePulse{0%,100%{box-shadow:0 0 0 0 rgba(59,130,246,0.4)}50%{box-shadow:0 0 0 8px rgba(59,130,246,0)}}
+.wf-box.done{border-color:var(--green);}
+.wf-box.running{border-color:var(--blue);}
+.wf-box.waiting{border-color:var(--border2);}
+.wf-box.blue-bg{background:rgba(59,130,246,0.12);}
+.wf-box.green-bg{background:rgba(16,185,129,0.1);}
+.wf-box.orange-bg{background:rgba(245,158,11,0.1);}
+.wf-box.purple-bg{background:rgba(139,92,246,0.1);}
+.wf-box.gray-bg{background:var(--surface2);}
+.wf-label{font-size:0.7rem;color:var(--muted);margin-top:8px;text-align:center;line-height:1.3;max-width:80px;}
+.wf-status{font-size:0.62rem;margin-top:3px;font-weight:600;}
+.wf-status.done{color:var(--green);}
+.wf-status.running{color:var(--blue-light);}
+.wf-status.waiting{color:var(--muted);}
+.wf-arrow{width:32px;height:2px;background:var(--border2);flex-shrink:0;position:relative;}
+.wf-arrow::after{content:'›';position:absolute;right:-6px;top:-10px;color:var(--muted);font-size:1.1rem;}
+.wf-arrow.done-arrow{background:var(--green);}
+.wf-arrow.done-arrow::after{color:var(--green);}
+
+/* Orders table */
+.orders-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+.orders-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.orders-title{font-size:0.9rem;font-weight:700;}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 1.5rem;font-size:0.7rem;font-weight:600;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;text-align:left;background:var(--surface2);}
+td{padding:12px 1.5rem;font-size:0.83rem;border-top:1px solid var(--border);}
+tr:hover td{background:rgba(255,255,255,0.02);}
+.order-id{font-family:var(--mono);color:var(--blue-light);font-size:0.78rem;}
+.status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:0.72rem;font-weight:600;}
+.status-badge::before{content:'';width:5px;height:5px;border-radius:50%;}
+.status-badge.fulfilled{background:rgba(16,185,129,0.1);color:var(--green);}
+.status-badge.fulfilled::before{background:var(--green);}
+.status-badge.processing{background:rgba(59,130,246,0.1);color:var(--blue-light);}
+.status-badge.processing::before{background:var(--blue);animation:pulse 1s infinite;}
+.status-badge.pending{background:rgba(245,158,11,0.1);color:var(--orange);}
+.status-badge.pending::before{background:var(--orange);}
+.amount{font-weight:600;}
+
+/* Log */
+.log-section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:1.5rem;margin-top:1.5rem;}
+.log-entries{display:flex;flex-direction:column;gap:0;}
+.log-entry{display:flex;align-items:flex-start;gap:12px;padding:8px 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:0.75rem;}
+.log-entry:last-child{border-bottom:none;}
+.log-time{color:var(--muted);flex-shrink:0;width:80px;}
+.log-level{width:50px;flex-shrink:0;font-weight:600;}
+.log-level.info{color:var(--blue-light);}
+.log-level.success{color:var(--green);}
+.log-level.warn{color:var(--orange);}
+.log-msg{color:rgba(232,240,254,0.7);line-height:1.4;}
+.log-msg span{color:var(--white);}
+
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;}
+  .sidebar{display:none;}
+  .metrics{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">Flow<span>AI</span></div>
+    </div>
+    <a class="nav-item active" href="#">📊 Dashboard</a>
+    <a class="nav-item" href="#">🔄 Workflows</a>
+    <a class="nav-item" href="#">📦 Orders</a>
+    <a class="nav-item" href="#">🔗 Integrations</a>
+    <div class="nav-section">System</div>
+    <a class="nav-item" href="#">📋 Logs</a>
+    <a class="nav-item" href="#">⚙️ Settings</a>
+    <div class="sidebar-bottom">
+      <a href="../portfolio.html" class="back-link">← Portfolio</a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Automation Dashboard</div>
+        <div class="page-sub">Phoenx Order Processing Live</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-sm btn-outline">Export</button>
+        <button class="btn-sm btn-blue" onclick="triggerOrder()">+ Simulate order</button>
+      </div>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Orders today</div>
+        <div class="metric-val blue" id="ordersToday">24</div>
+        <div class="metric-change up" id="ordersChange">↑ 12% from yesterday</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Fulfilled</div>
+        <div class="metric-val green" id="fulfilled">21</div>
+        <div class="metric-change up">↑ 87.5% success rate</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Processing</div>
+        <div class="metric-val orange" id="processing">3</div>
+        <div class="metric-change">avg 4.2 min each</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Revenue</div>
+        <div class="metric-val purple" id="revenue">₦187k</div>
+        <div class="metric-change up">↑ 23% this week</div>
+      </div>
+    </div>
+
+    <div class="workflow-section">
+      <div class="section-header">
+        <div class="section-title">Live workflow — Order #PH-0025</div>
+        <div class="running-badge"><span class="running-dot"></span> Running</div>
+      </div>
+      <div class="workflow">
+        <div class="wf-node">
+          <div class="wf-box blue-bg done">🛒</div>
+          <div class="wf-label">Order received</div>
+          <div class="wf-status done">✓ Done</div>
+        </div>
+        <div class="wf-arrow done-arrow"></div>
+        <div class="wf-node">
+          <div class="wf-box green-bg done">💳</div>
+          <div class="wf-label">Payment verified</div>
+          <div class="wf-status done">✓ Done</div>
+        </div>
+        <div class="wf-arrow done-arrow"></div>
+        <div class="wf-node">
+          <div class="wf-box blue-bg running active">📧</div>
+          <div class="wf-label">Confirmation email</div>
+          <div class="wf-status running">● Running</div>
+        </div>
+        <div class="wf-arrow"></div>
+        <div class="wf-node">
+          <div class="wf-box orange-bg waiting">🖨️</div>
+          <div class="wf-label">Send to Printify</div>
+          <div class="wf-status waiting">Waiting</div>
+        </div>
+        <div class="wf-arrow"></div>
+        <div class="wf-node">
+          <div class="wf-box purple-bg waiting">📦</div>
+          <div class="wf-label">Fulfilment</div>
+          <div class="wf-status waiting">Waiting</div>
+        </div>
+        <div class="wf-arrow"></div>
+        <div class="wf-node">
+          <div class="wf-box gray-bg waiting">🚚</div>
+          <div class="wf-label">Shipping notify</div>
+          <div class="wf-status waiting">Waiting</div>
+        </div>
+        <div class="wf-arrow"></div>
+        <div class="wf-node">
+          <div class="wf-box green-bg waiting">✅</div>
+          <div class="wf-label">Complete</div>
+          <div class="wf-status waiting">Waiting</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="orders-section">
+      <div class="orders-header">
+        <div class="orders-title">Recent orders</div>
+        <button class="btn-sm btn-outline">View all</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer</th>
+            <th>Product</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Time</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTable">
+          <tr><td class="order-id">#PH-0024</td><td>Amaka Obi</td><td>Phoenx Logo Tee — Black L</td><td class="amount">₦12,500</td><td><span class="status-badge fulfilled">Fulfilled</span></td><td style="color:var(--muted)">2 min ago</td></tr>
+          <tr><td class="order-id">#PH-0023</td><td>Kelechi Nweze</td><td>Phoenx Hoodie — White M</td><td class="amount">₦18,000</td><td><span class="status-badge fulfilled">Fulfilled</span></td><td style="color:var(--muted)">11 min ago</td></tr>
+          <tr><td class="order-id">#PH-0022</td><td>Fatima Bello</td><td>Phoenx Cap — Cream</td><td class="amount">₦8,500</td><td><span class="status-badge processing">Processing</span></td><td style="color:var(--muted)">18 min ago</td></tr>
+          <tr><td class="order-id">#PH-0021</td><td>David Eze</td><td>Phoenx Tee Bundle x2</td><td class="amount">₦22,000</td><td><span class="status-badge fulfilled">Fulfilled</span></td><td style="color:var(--muted)">34 min ago</td></tr>
+          <tr><td class="order-id">#PH-0020</td><td>Ngozi Uche</td><td>Phoenx Shorts — Navy S</td><td class="amount">₦9,800</td><td><span class="status-badge pending">Pending</span></td><td style="color:var(--muted)">51 min ago</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="log-section">
+      <div class="section-header">
+        <div class="section-title">System log</div>
+      </div>
+      <div class="log-entries" id="logEntries">
+        <div class="log-entry"><span class="log-time">14:32:07</span><span class="log-level success">SUCCESS</span><span class="log-msg">Order <span>#PH-0024</span> fulfilled — Printify confirmed print job #PT-88821</span></div>
+        <div class="log-entry"><span class="log-time">14:31:55</span><span class="log-level info">INFO</span><span class="log-msg">Webhook received from Selldone — new order <span>#PH-0025</span> ₦12,500</span></div>
+        <div class="log-entry"><span class="log-time">14:30:12</span><span class="log-level success">SUCCESS</span><span class="log-msg">Payment verified for <span>#PH-0025</span> — Paystack ref: <span>PAY_7x9k2m</span></span></div>
+        <div class="log-entry"><span class="log-time">14:28:44</span><span class="log-level info">INFO</span><span class="log-msg">Confirmation email queued for <span>amaka.obi@gmail.com</span></span></div>
+        <div class="log-entry"><span class="log-time">14:22:01</span><span class="log-level warn">WARN</span><span class="log-msg">Printify API response delayed — retrying in 30s (attempt 1/3)</span></div>
+        <div class="log-entry"><span class="log-time">14:21:10</span><span class="log-level success">SUCCESS</span><span class="log-msg">n8n workflow <span>order-pipeline-v3</span> executed in <span>1.24s</span></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let orderCount = 25;
+let revenue = 187000;
+let ordersToday = 24;
+let processingCount = 3;
+
+const names = ['Tunde Adeyemi','Chioma Ike','Seun Bello','Yusuf Musa','Grace Ojo','Emeka Nwachukwu','Blessing Okafor'];
+const products = ['Phoenx Logo Tee — Black M','Phoenx Hoodie — Grey L','Phoenx Cap — Black','Phoenx Shorts — Olive M','Phoenx Tee — White XL','Phoenx Bomber Jacket'];
+const amounts = [12500, 18000, 8500, 22000, 9800, 35000, 14000];
+
+function triggerOrder() {
+  const name = names[Math.floor(Math.random() * names.length)];
+  const product = products[Math.floor(Math.random() * products.length)];
+  const amount = amounts[Math.floor(Math.random() * amounts.length)];
+  const id = `#PH-00${orderCount}`;
+  orderCount++;
+  ordersToday++;
+  revenue += amount;
+  processingCount++;
+
+  document.getElementById('ordersToday').textContent = ordersToday;
+  document.getElementById('revenue').textContent = '₦' + Math.round(revenue/1000) + 'k';
+  document.getElementById('processing').textContent = processingCount;
+
+  const tbody = document.getElementById('ordersTable');
+  const row = document.createElement('tr');
+  row.innerHTML = `<td class="order-id">${id}</td><td>${name}</td><td>${product}</td><td class="amount">₦${amount.toLocaleString()}</td><td><span class="status-badge processing">Processing</span></td><td style="color:var(--muted)">Just now</td>`;
+  row.style.background = 'rgba(59,130,246,0.05)';
+  tbody.insertBefore(row, tbody.firstChild);
+
+  const log = document.getElementById('logEntries');
+  const now = new Date().toLocaleTimeString('en-GB');
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.innerHTML = `<span class="log-time">${now}</span><span class="log-level info">INFO</span><span class="log-msg">Webhook received — new order <span>${id}</span> ₦${amount.toLocaleString()} from <span>${name}</span></span>`;
+  log.insertBefore(entry, log.firstChild);
+
+  setTimeout(() => {
+    row.style.background = '';
+    row.querySelector('.status-badge').className = 'status-badge fulfilled';
+    row.querySelector('.status-badge').textContent = 'Fulfilled';
+    row.querySelector('td:last-child').textContent = 'Just now';
+    processingCount--;
+    document.getElementById('processing').textContent = processingCount;
+    document.getElementById('fulfilled').textContent = parseInt(document.getElementById('fulfilled').textContent) + 1;
+
+    const entry2 = document.createElement('div');
+    entry2.className = 'log-entry';
+    entry2.innerHTML = `<span class="log-time">${new Date().toLocaleTimeString('en-GB')}</span><span class="log-level success">SUCCESS</span><span class="log-msg">Order <span>${id}</span> fulfilled — Printify confirmed</span>`;
+    log.insertBefore(entry2, log.firstChild);
+  }, 4000);
+}
+
+setInterval(() => {
+  const entries = document.getElementById('logEntries').children;
+  if (entries.length > 12) entries[entries.length-1].remove();
+}, 5000);
+</script>
+</body>
+</html>
